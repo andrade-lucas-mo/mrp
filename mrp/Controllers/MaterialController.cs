@@ -62,5 +62,35 @@ namespace mrp.Controllers
             }
             return Ok("Material created successfully");
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public IActionResult DeleteMaterial(int id)
+        {
+            if (id == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_materialRepository.HasAny(id))
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_materialRepository.DeleteMaterial(id))
+            {
+                ModelState.AddModelError("", "Error when try to delete the material");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
     }
 }

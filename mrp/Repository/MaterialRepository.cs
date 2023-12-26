@@ -58,6 +58,13 @@ namespace mrp.Repository
             return Save();
         }
 
+        public bool DeleteMaterial(int id)
+        {
+            Material material = _context.Materials.Where(m => m.Id == id).FirstOrDefault();
+            _context.Remove(material);
+            return Save();
+        }
+
         public bool Save()
         {
             return _context.SaveChanges() > 0 ? true : false;
