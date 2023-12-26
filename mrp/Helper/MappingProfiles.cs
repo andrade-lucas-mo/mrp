@@ -8,15 +8,20 @@ namespace mrp.Helper
     {
         public MappingProfiles()
         {
-            CreateMap<Material, MaterialDto>();
+            CreateMap<Material, MaterialDto>()
+                .ForMember(dest => dest.Qtd, opt => opt.Ignore())
+                .AfterMap((src, dest) => {
+                    dest.Qtd = src.Stock.Qtd;
+                })
+                .ReverseMap()
+                .ForMember(dest => dest.Stock, opt => opt.Ignore());
             CreateMap<Stock, StockDto>();
             CreateMap<Product, ProductDto>();
-            CreateMap<ProductDto, ProductCascadeDto>();
             CreateMap<ProductDto, ProductCascadeDto>()
-            .ForMember(dest => dest.Hierarchies, opt => opt.Ignore())
-            .AfterMap((src, dest) => {
-                dest.Hierarchies = GetHierarchyCascades(src.Hierarchies);
-            });
+                .ForMember(dest => dest.Hierarchies, opt => opt.Ignore())
+                .AfterMap((src, dest) => {
+                    dest.Hierarchies = GetHierarchyCascades(src.Hierarchies);
+                });
             CreateMap<Hierarchy, HierarchyDto>();
         }
 

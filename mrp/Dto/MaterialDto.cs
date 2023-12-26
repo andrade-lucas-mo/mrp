@@ -7,6 +7,6 @@ namespace mrp.Dto
         public int Id { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
-        public StockDto Stock { get; set; }
+        public int Qtd { get; set; }
     }
 }

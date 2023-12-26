@@ -29,5 +29,38 @@ namespace mrp.Controllers
             }
             return Ok(materials);
         }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult CreateMaterial([FromQuery] int qtd, [FromQuery] int idProduct, [FromQuery] int idMaterialFather, [FromBody] MaterialDto materialDto)
+        {
+            if(materialDto == null || idProduct == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var materialsAlredyExist = _materialRepository.GetAll().Where(m => m.Code.Trim().ToUpper() == materialDto.Code.Trim().ToUpper()).FirstOrDefault();
+            if(materialsAlredyExist != null)
+            {
+                ModelState.AddModelError("", "Material code already exists");
+                return StatusCode(400, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var material = _mapper.Map<Material>(materialDto);
+            var qtdStock = materialDto.Qtd;
+            if (!_materialRepository.CreateMaterial(qtd, idProduct, idMaterialFather, qtdStock, material))
+            {
+                ModelState.AddModelError("", "Error when try to create the material");
+                return StatusCode(500, ModelState);
+            }
+            return Ok("Material created successfully");
+        }
     }
 }
